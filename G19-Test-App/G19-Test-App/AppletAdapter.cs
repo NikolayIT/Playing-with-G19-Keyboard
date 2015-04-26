@@ -1,26 +1,31 @@
 ﻿namespace G19_Test_App
 {
-    using System.Drawing;
-    using System.Drawing.Imaging;
+    using System;
 
     using LgLcd;
 
     public class AppletAdapter : Applet
     {
-        private readonly Bitmap bitmap;
+        private readonly IAppletProgram appletProgram;
 
         private readonly Device device;
 
-        public AppletAdapter()
+        public AppletAdapter(IAppletProgram appletProgram)
         {
-            this.bitmap = new Bitmap(320, 240, PixelFormat.Format32bppArgb);
-            this.bitmap.SetPixel(100, 100, Color.Yellow);
+            this.appletProgram = appletProgram;
+            this.appletProgram.BitmapChanged += this.AppletProgramBitmapChanged;
 
-            this.Connect("Nikolay.IT Test", true, AppletCapabilities.Qvga);
+            this.Connect(appletProgram.Name, true, AppletCapabilities.Qvga);
 
             this.device = new Device();
             this.device.Open(this, DeviceType.Qvga);
-            this.device.UpdateBitmap(this.bitmap, Priority.Normal);
+
+            this.appletProgram.Initialize();
+        }
+
+        private void AppletProgramBitmapChanged(object sender, BitmapChangedEventArgs e)
+        {
+            this.device.UpdateBitmap(e.Bitmap, Priority.Normal);
         }
     }
 }

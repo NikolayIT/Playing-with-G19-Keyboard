@@ -8,7 +8,7 @@
     {
         public static void Main()
         {
-            var applet = new AppletAdapter();
+            var applet = new AppletAdapter(new TestApplet());
             Console.ReadLine();
         }
     }
